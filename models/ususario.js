@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const UsuarioSchema = Schema({
-    name: {
+    nombre: {
         type: String,
         require: false
     },
@@ -18,6 +18,11 @@ const UsuarioSchema = Schema({
     password: {
         type: String,
         require: true
+    },
+    mascotas: {
+        type: Array,
+        require: false,
+        default: []
     },
     avatar: {
         type: String,

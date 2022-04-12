@@ -1,5 +1,5 @@
 const Mascota = require("../models/mascota");
-
+const UsuarioController = require("../controllers/usuarioController")
 async function createMascota(req, res) {
    const mascota = new Mascota();
    const params = req.body;
@@ -12,6 +12,7 @@ async function createMascota(req, res) {
             res.status(400).send({msg: "No se ha podído guardar el bicho"});
             
         }else{
+            UsuarioController.addMascota(req.user, mascotaStore) 
             res.status(200).send({Mascota: mascotaStore});
         }
 

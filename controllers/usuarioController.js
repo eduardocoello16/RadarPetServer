@@ -19,6 +19,9 @@ async function registrarUsuario(req, res){
         const nuevoUsuario = new Usuario();
         nuevoUsuario.password = await bcryptjs.hash(params.password, salt)
         nuevoUsuario.email = params.email
+        nuevoUsuario.nombre = params.nombre
+        nuevoUsuario.apellido = params.apellido
+        nuevoUsuario.avatar = params.avatar
         nuevoUsuario.save();
         res.status(200).send(nuevoUsuario);
     } catch (error) {
@@ -42,7 +45,7 @@ async function iniciarSesion(req, res){
 }
 
 
-async function protected(req, res){
+async function getUsuario(req, res){
   
    console.log(req.user.email)
    try {
@@ -54,13 +57,23 @@ async function protected(req, res){
     
 }
    
-    res.status(200).send({msg: "Contenido protegido"})
+    res.status(200).send(req.user)
 }
 
-
+async function addMascota(user, mascota) {
+    //Meter una mascota al usuario 
+    try {
+    const usuario = await Usuario.findByIdAndUpdate( {_id: user.id});
+    usuario.mascotas.push(mascota.id)
+    usuario.save();
+    } catch (error) {
+        console.log(error)
+    }
+  }
 
 module.exports = {
     registrarUsuario,
     iniciarSesion,
-    protected
+    getUsuario,
+    addMascota
 }

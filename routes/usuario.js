@@ -7,5 +7,5 @@ api.use(cors())
 api.post("/registrarse", UsuarioController.registrarUsuario)
 api.post("/iniciarsesion", UsuarioController.iniciarSesion)
 
-api.get("/protected", [md_auth.ensureAuth], UsuarioController.protected)
+api.get("/getUsuario", [md_auth.ensureAuth], UsuarioController.getUsuario)
 module.exports = api;
