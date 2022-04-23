@@ -35,6 +35,24 @@ async function getMascotas(req, res) {
         res.status(500).send(error)
     }
   }
+  async function getMascotasFromUser(req, res) {
+   let mascotas = await UsuarioController.getMascotas(req.user);
+    if(!mascotas){
+        res.status(400).send({msg : "Error al obtener las tareas"})
+    }else{
+        var listaMascotas = [];
+        for(let i = 0; i < mascotas.length; i++){
+            const mascota = await Mascota.findById(mascotas[i]);
+            listaMascotas.push(mascota);
+        }
+        res.status(200).send(listaMascotas)
+         
+  
+    }
+   
+  }
+
+
   
 async function getMascota(req, res) {
  const idMascota = req.params.id;
@@ -94,5 +112,6 @@ module.exports = {
     getMascotas,
     getMascota,
     editMascota,
+    getMascotasFromUser,
     delMascota
 };

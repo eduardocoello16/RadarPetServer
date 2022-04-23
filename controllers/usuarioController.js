@@ -6,10 +6,6 @@ const jwt = require("../services/jwt");
 async function registrarUsuario(req, res){
    
     const params = req.body;
-    console.log(params)
-    
-  
-
     try {
         if(!params.email) throw {msg: "Email Vacio"};
         if(!params.password) throw {msg: "Pass Vacio"};
@@ -47,19 +43,28 @@ async function iniciarSesion(req, res){
 
 async function getUsuario(req, res){
   
-   console.log(req.user.email)
+
    try {
-    const usuario = await Usuario.findOne( {email: req.user.email});
-    if(!usuario) throw {msg: "Error en el mail o password"}
-    console.log(usuario)
+         const user = {
+                id: req.user.id,
+                nombre: req.user.nombre,
+                email: req.user.email
+         }
+    res.status(200).send(user)
+   
 } catch (error) {
     res.status(500).send(error)
     
 }
    
-    res.status(200).send(req.user)
+   
 }
 
+async function getMascotas(user) {
+  const usuario = await Usuario.findOne( {id: user.id});
+    if(!usuario) throw {msg: "Error en el mail o password"}
+    return usuario.mascotas; //Devuelve un array de id de mascotas
+}
 async function addMascota(user, mascota) {
     //Meter una mascota al usuario 
     try {
@@ -75,5 +80,6 @@ module.exports = {
     registrarUsuario,
     iniciarSesion,
     getUsuario,
-    addMascota
+    addMascota,
+    getMascotas
 }
