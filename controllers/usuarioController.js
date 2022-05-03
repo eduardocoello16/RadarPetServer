@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const Usuario = require("../models/ususario");
 const bcryptjs = require("bcryptjs");
 const jwt = require("../services/jwt");
@@ -60,6 +62,55 @@ async function getUsuario(req, res){
    
 }
 
+function uploadAvatar(req, res) {
+  console.log(req.files)
+    Usuario.findById({_id: req.user.id} , (err, usuario) => {
+        if(err) {
+            res.status(500).send({msg: "Error al buscar el usuario"})
+        }else{
+            if(!usuario) {
+                res.status(404).send({msg: "No existe el usuario"})
+            }else{
+                let user = usuario;
+                if(req.files) {
+                    const filePath = req.files.avatar.path;
+                    const fileSplit = filePath.split('\\');
+                    const fileName = fileSplit[2];
+                    const extSplit = fileName.split('\.');
+                   
+                    if(extSplit[1] === 'png'  || extSplit[1] === 'jpg') {
+                        user.avatar = fileName;
+                        user.save();
+                        res.status(200).send({msg: "Avatar actualizado"})
+                    }
+                else{
+                    res.status(500).send({msg: "Extension no valida. Solo .png y .jpg"});
+                    console.log(extSplit[1])
+                }
+            }
+            }
+        }
+    }) 
+
+}
+
+
+async function getAvatar(req, res){
+    console.log(req.user.id)
+    const usuario = await Usuario.findOne( {_id: req.user.id});
+    if(!usuario) throw {msg: "Error en el mail o password"}
+    const filePath = `./uploads/usuarios/${usuario.avatar}`;
+    fs.stat(filePath, (err, stats) => {
+        if(err) {
+            res.status(404).send({msg: "No existe el archivo"})
+        }else{
+            res.sendFile(path.resolve(filePath))
+        }
+    })
+
+}
+
+//Funciones para Mascotas con el usuario 
 async function getMascotas(user) {
   const usuario = await Usuario.findOne( {id: user.id});
     if(!usuario) throw {msg: "Error en el mail o password"}
@@ -81,5 +132,7 @@ module.exports = {
     iniciarSesion,
     getUsuario,
     addMascota,
-    getMascotas
+    getMascotas,
+    uploadAvatar,
+    getAvatar
 }
