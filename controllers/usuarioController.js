@@ -63,7 +63,8 @@ async function getUsuario(req, res){
 }
 
 function uploadAvatar(req, res) {
-  console.log(req.files)
+    if(req.files.avatar){
+ try {
     Usuario.findById({_id: req.user.id} , (err, usuario) => {
         if(err) {
             res.status(500).send({msg: "Error al buscar el usuario"})
@@ -79,25 +80,41 @@ function uploadAvatar(req, res) {
                     const extSplit = fileName.split('\.');
                    
                     if(extSplit[1] === 'png'  || extSplit[1] === 'jpg') {
+                        try {
+                            if (fs.existsSync(`./uploads/usuarios/${user.avatar}`)) {
+                            fs.unlinkSync(`./uploads/usuarios/${user.avatar}`);
+                        }
+                            res.status(200).send({msg: "Avatar actualizado"})
+                        } catch (error) {
+                            res.status(500).send({msg: "Error interno del servidor al eliminar tu antiguo avatar"})
+                        }
                         user.avatar = fileName;
                         user.save();
-                        res.status(200).send({msg: "Avatar actualizado"})
                     }
                 else{
                     res.status(500).send({msg: "Extension no valida. Solo .png y .jpg"});
-                    console.log(extSplit[1])
                 }
             }
             }
         }
     }) 
 
+     
+ } catch (error) {
+     console.log(error)
+ }
+     
+ }else{
+     res.status(500).send({msg: "No se ha subido ningun archivo"})
+
+ }
+   
 }
 
 
 async function getAvatar(req, res){
-    console.log(req.user.id)
-    const usuario = await Usuario.findOne( {_id: req.user.id});
+    try {
+        const usuario = await Usuario.findOne( {_id: req.user.id});
     if(!usuario) throw {msg: "Error en el mail o password"}
     const filePath = `./uploads/usuarios/${usuario.avatar}`;
     fs.stat(filePath, (err, stats) => {
@@ -107,6 +124,11 @@ async function getAvatar(req, res){
             res.sendFile(path.resolve(filePath))
         }
     })
+    } catch (error) {
+        res.status(500).send(error)
+    }
+    
+    
 
 }
 
