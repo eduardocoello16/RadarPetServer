@@ -7,7 +7,9 @@ const jwt = require("../services/jwt");
 
 async function registrarUsuario(req, res){
    
-    const params = req.body;
+    const params = JSON.parse(req.body.datos);
+
+    
     try {
         if(!params.email) throw {msg: "Email Vacio"};
         if(!params.password) throw {msg: "Pass Vacio"};
@@ -19,9 +21,27 @@ async function registrarUsuario(req, res){
         nuevoUsuario.email = params.email
         nuevoUsuario.nombre = params.nombre
         nuevoUsuario.apellido = params.apellido
-        nuevoUsuario.avatar = params.avatar
-        nuevoUsuario.save();
-        res.status(200).send(nuevoUsuario);
+        if(req.files.avatar){
+            const filePath = req.files.avatar.path;
+                    const fileSplit = filePath.split('\\');
+                    const fileName = fileSplit[2];
+                    const extSplit = fileName.split('\.');
+                    if(extSplit[1] === 'png'  || extSplit[1] === 'jpg') {
+                        nuevoUsuario.avatar = fileName;
+                        nuevoUsuario.save();
+                        res.status(200).send({msg: "Usuario registrado"})
+                        
+                    }
+                else{
+                    res.status(500).send({msg: "Extension no valida. Solo .png y .jpg"});
+                }
+        }else{
+            nuevoUsuario.save();
+            res.status(200).send({msg: "Usuario registrado"})
+           
+        }
+    
+       
     } catch (error) {
         res.status(500).send(error)
     }
@@ -38,14 +58,12 @@ async function iniciarSesion(req, res){
        res.status(200).send({token: jwt.crearToken(usuario, "12h")})
    } catch (error) {
        res.status(500).send(error)
-       console.log("error")
+       console.log(error)
    }
 }
 
 
 async function getUsuario(req, res){
-  
-
    try {
          const user = {
                 id: req.user.id,
@@ -56,10 +74,7 @@ async function getUsuario(req, res){
    
 } catch (error) {
     res.status(500).send(error)
-    
 }
-   
-   
 }
 
 function uploadAvatar(req, res) {
@@ -106,12 +121,8 @@ function uploadAvatar(req, res) {
      
  }else{
      res.status(500).send({msg: "No se ha subido ningun archivo"})
-
  }
-   
 }
-
-
 async function getAvatar(req, res){
     try {
         const usuario = await Usuario.findOne( {_id: req.user.id});
@@ -134,7 +145,7 @@ async function getAvatar(req, res){
 
 //Funciones para Mascotas con el usuario 
 async function getMascotas(user) {
-  const usuario = await Usuario.findOne( {id: user.id});
+  const usuario = await Usuario.findOne( {_id: user.id});
     if(!usuario) throw {msg: "Error en el mail o password"}
     return usuario.mascotas; //Devuelve un array de id de mascotas
 }

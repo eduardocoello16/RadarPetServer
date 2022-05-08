@@ -17,6 +17,11 @@ const MascotaSchema = Schema({
     
     default: Date.now,
   },
+  Foto: {
+    type: String,
+    require: true,
+    
+  }
 });
 
 

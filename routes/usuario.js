@@ -8,7 +8,7 @@ const md_upload = multipart({ uploadDir: './uploads/usuarios' })
 
 const api = express.Router();
 api.use(cors())
-api.post("/registrarse", UsuarioController.registrarUsuario)
+api.post("/registrarse",  md_upload, UsuarioController.registrarUsuario)
 api.post("/iniciarsesion", UsuarioController.iniciarSesion)
 api.put("/uploadAvatar",[md_auth.ensureAuth, md_upload], UsuarioController.uploadAvatar)
 api.get("/getAvatar", [md_auth.ensureAuth], UsuarioController.getAvatar)
