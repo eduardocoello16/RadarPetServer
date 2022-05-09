@@ -165,7 +165,6 @@ async function addMascota(user, mascota) {
     try {
     const usuario = await Usuario.findByIdAndUpdate( {_id: user.id});
     const mascotaEncontrada = usuario.mascotas.find(idMascota => idMascota === idMascota);
-    console.log(mascotaEncontrada)
     if(!mascotaEncontrada) { return null }
     else{
         const mascota = await Mascota.findById(idMascota);
