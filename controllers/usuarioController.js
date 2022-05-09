@@ -1,4 +1,5 @@
 const fs = require('fs');
+const Mascota = require("../models/mascota");
 const path = require('path');
 const Usuario = require("../models/ususario");
 const bcryptjs = require("bcryptjs");
@@ -159,6 +160,21 @@ async function addMascota(user, mascota) {
         console.log(error)
     }
   }
+  async function buscaMascota(user, idMascota) {
+    //Meter una mascota al usuario 
+    try {
+    const usuario = await Usuario.findByIdAndUpdate( {_id: user.id});
+    const mascotaEncontrada = usuario.mascotas.find(idMascota => idMascota === idMascota);
+    console.log(mascotaEncontrada)
+    if(!mascotaEncontrada) { return null }
+    else{
+        const mascota = await Mascota.findById(idMascota);
+        return mascota;
+    }
+    } catch (error) {
+        console.log(error)
+    }
+  }
 
 module.exports = {
     registrarUsuario,
@@ -167,5 +183,6 @@ module.exports = {
     addMascota,
     getMascotas,
     uploadAvatar,
-    getAvatar
+    getAvatar,
+    buscaMascota
 }

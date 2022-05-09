@@ -19,27 +19,39 @@ async function createMascota(req, res) {
       try {
         const mascotaStore = await mascota.save();
         if (!mascotaStore) {
-          res.status(400).send({ msg: "No se ha podído guardar el bicho" });
+          res.status(400).send({
+            msg: "No se ha podído guardar el bicho"
+          });
         } else {
           UsuarioController.addMascota(req.user, mascotaStore);
-          res.status(200).send({ Mascota: mascotaStore });
+          res.status(200).send({
+            Mascota: mascotaStore
+          });
         }
       } catch (error) {
         res.status(500).send(error);
       }
     } else {
-      res.status(500).send({ msg: "Extension no valida. Solo .png y .jpg" });
+      res.status(500).send({
+        msg: "Extension no valida. Solo .png y .jpg"
+      });
     }
   } else {
-    res.status(500).send({ msg: "No se ha subido ninguna foto" });
+    res.status(500).send({
+      msg: "No se ha subido ninguna foto"
+    });
   }
 }
 
 async function getMascotas(req, res) {
   try {
-    const listaMascotas = await Mascota.find().sort({ FechaCreacion: -1 });
+    const listaMascotas = await Mascota.find().sort({
+      FechaCreacion: -1
+    });
     if (!listaMascotas) {
-      res.status(400).send({ msg: "Error al obtener las Mascotas" });
+      res.status(400).send({
+        msg: "Error al obtener las Mascotas"
+      });
     } else {
       res.status(200).send(listaMascotas);
     }
@@ -50,7 +62,9 @@ async function getMascotas(req, res) {
 async function getMascotasFromUser(req, res) {
   let mascotas = await UsuarioController.getMascotas(req.user);
   if (!mascotas) {
-    res.status(400).send({ msg: "Error al obtener las tareas" });
+    res.status(400).send({
+      msg: "Error al obtener las tareas"
+    });
   } else {
     var listaMascotas = [];
     for (let i = 0; i < mascotas.length; i++) {
@@ -68,7 +82,9 @@ async function getMascota(req, res) {
     const mascota = await Mascota.findById(idMascota);
 
     if (!mascota) {
-      res.status(400).send({ msg: "no se ha encontrado la tarea" });
+      res.status(400).send({
+        msg: "no se ha encontrado la tarea"
+      });
     } else {
       res.status(200).send(mascota);
     }
@@ -85,9 +101,13 @@ async function editMascota(req, res) {
     const mascota = await Mascota.findByIdAndUpdate(idMascota, params);
 
     if (!mascota) {
-      res.status(400).send({ msg: "no se ha encontrado la tarea" });
+      res.status(400).send({
+        msg: "no se ha encontrado la tarea"
+      });
     } else {
-      res.status(200).send({ msg: "Se ha actualizado correctamet" });
+      res.status(200).send({
+        msg: "Se ha actualizado correctamet"
+      });
     }
   } catch (error) {
     res.status(500).send(error);
@@ -100,9 +120,13 @@ async function delMascota(req, res) {
     const mascota = await Mascota.findByIdAndDelete(idMascota);
 
     if (!mascota) {
-      res.status(400).send({ msg: "No se ha encontrado la Mascota" });
+      res.status(400).send({
+        msg: "No se ha encontrado la Mascota"
+      });
     } else {
-      res.status(200).send({ msg: "Se ha actualizado correctamet" });
+      res.status(200).send({
+        msg: "Se ha actualizado correctamet"
+      });
     }
   } catch (error) {
     res.status(500).send(error);
@@ -110,12 +134,18 @@ async function delMascota(req, res) {
 }
 async function getFoto(req, res) {
   try {
-    const mascota = await Mascota.findOne({ _id: req.params.id });
-    if (!mascota) throw { msg: "Error en el mail o password" };
+    const mascota = await Mascota.findOne({
+      _id: req.params.id
+    });
+    if (!mascota) throw {
+      msg: "Error en el mail o password"
+    };
     const filePath = `./uploads/fotosMascotas/${mascota.Foto}`;
     fs.stat(filePath, (err, stats) => {
       if (err) {
-        res.status(404).send({ msg: "No existe el archivo" });
+        res.status(404).send({
+          msg: "No existe el archivo"
+        });
       } else {
         res.sendFile(path.resolve(filePath));
       }
@@ -123,6 +153,41 @@ async function getFoto(req, res) {
   } catch (error) {
     res.status(500).send(error);
   }
+}
+
+async function updateFoto(req, res) {
+  if (req.files.foto) {
+    const mascotaUser = await UsuarioController.buscaMascota(req.user, req.params.id);
+    if (!mascotaUser) {
+      res.status(400).send({
+        msg: "No tienes permisos para actualizar la foto"
+      });
+    } else {
+      const filePath = req.files.foto.path;
+      const fileSplit = filePath.split("/");
+      const fileName = fileSplit[2];
+      const extSplit = fileName.split(".");
+      if (extSplit[1] === "png" || extSplit[1] === "jpg") {
+        try {
+          if (fs.existsSync(`./uploads/fotosMascotas/${mascotaUser.Foto}`)) {
+            fs.unlinkSync(`./uploads/fotosMascotas/${mascotaUser.Foto}`);
+          }
+          mascotaUser.Foto = fileName;
+          mascotaUser.save();
+          res.status(200).send({
+            msg: "Avatar actualizado"
+          })
+        } catch (error) {
+          res.status(500).send({
+            msg: "Error interno del servidor al eliminar tu antiguo avatar"
+          })
+        }
+      }
+    }
+
+
+  }
+
 }
 
 module.exports = {
@@ -133,4 +198,5 @@ module.exports = {
   getMascotasFromUser,
   delMascota,
   getFoto,
+  updateFoto
 };
