@@ -24,9 +24,9 @@ async function registrarUsuario(req, res){
         nuevoUsuario.apellido = params.apellido
         if(req.files.avatar){
             const filePath = req.files.avatar.path;
-                    const fileSplit = filePath.split('\\');
+                    const fileSplit = filePath.split('/');
                     const fileName = fileSplit[2];
-                    const extSplit = fileName.split('\.');
+                    const extSplit = fileName.split(".");
                     if(extSplit[1] === 'png'  || extSplit[1] === 'jpg') {
                         nuevoUsuario.avatar = fileName;
                         nuevoUsuario.save();
@@ -91,7 +91,7 @@ function uploadAvatar(req, res) {
                 let user = usuario;
                 if(req.files) {
                     const filePath = req.files.avatar.path;
-                    const fileSplit = filePath.split('\\');
+                    const fileSplit = filePath.split('/');
                     const fileName = fileSplit[2];
                     const extSplit = fileName.split('\.');
                    
@@ -175,6 +175,21 @@ async function addMascota(user, mascota) {
     }
   }
 
+    async function deleteMascota(user, idMascota) {
+        //Borrar una mascota del array 
+        try {
+        const usuario = await Usuario.findByIdAndUpdate( {_id: user.id});
+       var posicion = usuario.mascotas.findIndex(id => id === idMascota);
+        usuario.mascotas.splice(posicion, 1);
+        usuario.save();
+        } catch (error) {
+            console.log(error)
+        }
+    
+    
+    
+    }
+
 module.exports = {
     registrarUsuario,
     iniciarSesion,
@@ -183,5 +198,6 @@ module.exports = {
     getMascotas,
     uploadAvatar,
     getAvatar,
-    buscaMascota
+    buscaMascota,
+    deleteMascota
 }

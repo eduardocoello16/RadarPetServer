@@ -6,10 +6,22 @@ const MascotaSchema = Schema({
     type: String,
     require: true,
   },
-
+  Tipo: {
+    type: String,
+    require: true,
+  },
+  Descripcion: {
+    type: String,
+  },
   Ubicacion: {
     type: Object,
     require: true,
+  },
+  Edad: {
+    type: Number,
+  },
+  Peso: {
+    type: String
   },
  
   FechaCreacion: {

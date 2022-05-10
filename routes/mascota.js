@@ -13,5 +13,5 @@ api.put("/updateFoto/:id",[md_auth.ensureAuth, md_upload], MascotaController.upd
 api.get("/fotoMascota/:id", MascotaController.getFoto)
 api.get("/mascota/:id", MascotaController.getMascota)
 api.put("/mascota/:id", MascotaController.editMascota)
-api.delete("/mascota/:id", MascotaController.delMascota)
+api.delete("/mascota/:id", md_auth.ensureAuth, MascotaController.delMascota)
 module.exports = api;

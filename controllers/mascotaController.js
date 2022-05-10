@@ -9,8 +9,14 @@ async function createMascota(req, res) {
   if (params.Nombre && req.files.foto) {
     mascota.Nombre = params.Nombre;
     mascota.Ubicacion = params.Ubicacion;
+    mascota.Tipo = params.Tipo;
+    mascota.Raza = params.Raza;
+    mascota.Edad = params.Edad;
+    mascota.Descripcion = params.Descripcion;
+    mascota.Peso = params.Peso;
+    
     const filePath = req.files.foto.path;
-    const fileSplit = filePath.split("\\");
+    const fileSplit = filePath.split("/");
     const fileName = fileSplit[2];
     const extSplit = fileName.split(".");
 
@@ -124,8 +130,9 @@ async function delMascota(req, res) {
         msg: "No se ha encontrado la Mascota"
       });
     } else {
+      UsuarioController.deleteMascota(req.user, idMascota);
       res.status(200).send({
-        msg: "Se ha actualizado correctamet"
+        msg: "Se ha eliminado correctamente"
       });
     }
   } catch (error) {
