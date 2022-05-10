@@ -130,6 +130,9 @@ async function delMascota(req, res) {
         msg: "No se ha encontrado la Mascota"
       });
     } else {
+      if (fs.existsSync(`./uploads/fotosMascotas/${mascota.Foto}`)) {
+        fs.unlinkSync(`./uploads/fotosMascotas/${mascota.Foto}`);
+      }
       UsuarioController.deleteMascota(req.user, idMascota);
       res.status(200).send({
         msg: "Se ha eliminado correctamente"
