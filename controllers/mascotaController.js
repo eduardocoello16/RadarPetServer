@@ -16,7 +16,9 @@ async function createMascota(req, res) {
     mascota.Peso = params.Peso;
     
     const filePath = req.files.foto.path;
-    const fileSplit = filePath.split("/");
+    console.log(filePath);
+    const fileSplit = filePath.split(process.env.split);
+    console.log(process.env.split);
     const fileName = fileSplit[2];
     const extSplit = fileName.split(".");
 
@@ -174,9 +176,10 @@ async function updateDatos(req, res) {
         msg: "No tienes permisos para actualizar los datos"
       });
     } else {
+      console.log(req.files);
       if(req.files.foto){
       const filePath = req.files.foto.path;
-      const fileSplit = filePath.split("/");
+      const fileSplit = filePath.split(process.env.split);
       const fileName = fileSplit[2];
       const extSplit = fileName.split(".");
       if (extSplit[1] === "png" || extSplit[1] === "jpg") {

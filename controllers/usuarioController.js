@@ -24,7 +24,7 @@ async function registrarUsuario(req, res){
         nuevoUsuario.apellido = params.apellido
         if(req.files.avatar){
             const filePath = req.files.avatar.path;
-                    const fileSplit = filePath.split('/');
+                    const fileSplit = filePath.split(process.env.split);
                     const fileName = fileSplit[2];
                     const extSplit = fileName.split(".");
                     if(extSplit[1] === 'png'  || extSplit[1] === 'jpg') {
@@ -94,7 +94,7 @@ function uploadAvatar(req, res) {
                 let user = usuario;
                 if(req.files) {
                     const filePath = req.files.avatar.path;
-                    const fileSplit = filePath.split('/');
+                    const fileSplit = filePath.split(process.env.split);
                     const fileName = fileSplit[2];
                     const extSplit = fileName.split('\.');
                    
