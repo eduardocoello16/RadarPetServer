@@ -56,7 +56,10 @@ async function iniciarSesion(req, res){
        if(!usuario) throw {msg: "Error en el mail o password"}
        const passwordSuccess = await bcryptjs.compare(password, usuario.password)
        if(!passwordSuccess) throw {msg: "Error en el mail o password"}
-       res.status(200).send({token: jwt.crearToken(usuario, "12h")})
+       res.status(200).send({
+           // Para añadir time jwt.createToken(usuario , "1 day || 1 week || 1 month")
+           token: jwt.crearToken(usuario, "1 week"),
+        })
    } catch (error) {
        res.status(500).send(error)
        console.log(error)

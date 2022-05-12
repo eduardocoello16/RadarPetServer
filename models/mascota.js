@@ -13,6 +13,9 @@ const MascotaSchema = Schema({
   Descripcion: {
     type: String,
   },
+  Raza: {
+    type: String,
+  },
   Ubicacion: {
     type: Object,
     require: true,
@@ -26,7 +29,7 @@ const MascotaSchema = Schema({
  
   FechaCreacion: {
     type: Date,
-    
+    editable: false,
     default: Date.now,
   },
   Foto: {

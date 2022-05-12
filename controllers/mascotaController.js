@@ -108,7 +108,7 @@ async function editMascota(req, res) {
 
     if (!mascota) {
       res.status(400).send({
-        msg: "no se ha encontrado la tarea"
+        msg: "no se ha encontrado la mascota"
       });
     } else {
       res.status(200).send({
@@ -165,14 +165,16 @@ async function getFoto(req, res) {
   }
 }
 
-async function updateFoto(req, res) {
-  if (req.files.foto) {
+async function updateDatos(req, res) {
+ // const params = JSON.parse(req.body.datos);
+
     const mascotaUser = await UsuarioController.buscaMascota(req.user, req.params.id);
     if (!mascotaUser) {
       res.status(400).send({
-        msg: "No tienes permisos para actualizar la foto"
+        msg: "No tienes permisos para actualizar los datos"
       });
     } else {
+      if(req.files.foto){
       const filePath = req.files.foto.path;
       const fileSplit = filePath.split("/");
       const fileName = fileSplit[2];
@@ -193,10 +195,30 @@ async function updateFoto(req, res) {
           })
         }
       }
+    } else {
+      if(req.body.datos){
+        let params = JSON.parse(req.body.datos);
+        try {
+          const mascota = await Mascota.findByIdAndUpdate(mascotaUser.id, params);
+      
+          if (!mascota) {
+            res.status(400).send({
+              msg: "no se ha encontrado la mascota"
+            });
+          } else {
+            res.status(200).send({
+              msg: "Se ha actualizado correctamet"
+            });
+          }
+        } catch (error) {
+          res.status(500).send(error);
+          console.log(error)
+        }
+        }
+      }
+
+
     }
-
-
-  }
 
 }
 
@@ -208,5 +230,5 @@ module.exports = {
   getMascotasFromUser,
   delMascota,
   getFoto,
-  updateFoto
+  updateDatos
 };
