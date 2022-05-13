@@ -14,6 +14,10 @@ async function createMascota(req, res) {
     mascota.Edad = params.Edad;
     mascota.Descripcion = params.Descripcion;
     mascota.Peso = params.Peso;
+    //Crear una expiración de 3 mesitos
+    let date = new Date();
+    date.setMonth(date.getMonth() + 3);
+    mascota.FechaExpiracion = date
     
     const filePath = req.files.foto.path;
     console.log(filePath);
@@ -53,9 +57,10 @@ async function createMascota(req, res) {
 
 async function getMascotas(req, res) {
   try {
-    const listaMascotas = await Mascota.find().sort({
+    var listaMascotas = await Mascota.find().sort({
       FechaCreacion: -1
     });
+   listaMascotas = listaMascotas.filter(mascota => mascota.FechaExpiracion >= new Date());
     if (!listaMascotas) {
       res.status(400).send({
         msg: "Error al obtener las Mascotas"
@@ -176,7 +181,6 @@ async function updateDatos(req, res) {
         msg: "No tienes permisos para actualizar los datos"
       });
     } else {
-      console.log(req.files);
       if(req.files.foto){
       const filePath = req.files.foto.path;
       const fileSplit = filePath.split(process.env.split);

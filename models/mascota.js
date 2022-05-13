@@ -2,13 +2,21 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const MascotaSchema = Schema({
+  TipoEstado: {
+    type: String,
+    enum: ["Perdido", "Encontrado"],
+    required: [true, "El campo de TipoEstado es requerido"]
+  },
   Nombre: {
     type: String,
-    require: true,
+    require: [true, "Debes insertar un Nombre a tu mascota"]
   },
   Tipo: {
     type: String,
-    require: true,
+    //Restringir el tipo de mascota
+    enum: ["Perro", "Gato", "Pajaro", "Otro"],
+    default: "Otro",
+    require: [true, "El campo de Tipo es requerido"],
   },
   Descripcion: {
     type: String,
@@ -32,6 +40,9 @@ const MascotaSchema = Schema({
     editable: false,
     default: Date.now,
   },
+  FechaExpiracion: {
+    type: Date
+  },  //30 dias       
   Foto: {
     type: String,
     require: true,
