@@ -7,6 +7,7 @@ async function createMascota(req, res) {
   const params = JSON.parse(req.body.datos);
 
   if (params.Nombre && req.files.foto) {
+    mascota.TipoEstado = params.TipoEstado;
     mascota.Nombre = params.Nombre;
     mascota.Ubicacion = params.Ubicacion;
     mascota.Tipo = params.Tipo;
@@ -172,6 +173,34 @@ async function getFoto(req, res) {
   }
 }
 
+async function caducidadMascota(req,res){
+  idMascota = req.params.id;
+  try {
+    const mascota = await Mascota.findById(idMascota);
+    if (!mascota) {
+      res.status(400).send({
+        msg: "no se ha encontrado la mascota"
+      });
+    } else {
+     if(mascota.FechaExpiracion < new Date()){
+      mascota.FechaExpiracion = new Date().setMonth(new Date().getMonth() + 3);
+      mascota.save();
+      res.status(200).send({
+        msg: "Se ha actualizado correctamete"
+      });
+    }else{
+      res.status(400).send({
+        msg: "La mascota no ha caducado"
+      });
+    }
+    }
+  } catch (error) {
+    res.status(500).send(error);
+  }
+
+
+}
+
 async function updateDatos(req, res) {
  // const params = JSON.parse(req.body.datos);
 
@@ -237,5 +266,6 @@ module.exports = {
   getMascotasFromUser,
   delMascota,
   getFoto,
-  updateDatos
+  updateDatos,
+  caducidadMascota
 };

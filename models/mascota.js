@@ -5,7 +5,7 @@ const MascotaSchema = Schema({
   TipoEstado: {
     type: String,
     enum: ["Perdido", "Encontrado"],
-    required: [true, "El campo de TipoEstado es requerido"]
+    required: [true, "¿Has perdido o encontrado una mascota? Falta El campo TipoEstado"]
   },
   Nombre: {
     type: String,

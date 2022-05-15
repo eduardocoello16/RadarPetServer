@@ -7,6 +7,7 @@ const api = express.Router();
 const md_upload = multipart({ uploadDir: './uploads/fotosMascotas' })
 api.use(cors())
 api.post("/nueva", [md_auth.ensureAuth,md_upload], MascotaController.createMascota)
+api.put("/aumentarCaducidad/:id", [md_auth.ensureAuth], MascotaController.caducidadMascota)
 api.get("/getFromUser", [md_auth.ensureAuth], MascotaController.getMascotasFromUser)
 api.get("/mascotas", MascotaController.getMascotas)
 api.put("/updateDatos/:id",[md_auth.ensureAuth, md_upload], MascotaController.updateDatos)
