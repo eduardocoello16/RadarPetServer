@@ -13,6 +13,8 @@ async function createMascota(req, res) {
     mascota.Tipo = params.Tipo;
     mascota.Raza = params.Raza;
     mascota.Edad = params.Edad;
+    mascota.Tipocontacto = params.Tipocontacto;
+    mascota.Contacto = params.Contacto;
     mascota.Descripcion = params.Descripcion;
     mascota.Peso = params.Peso;
     //Crear una expiración de 3 mesitos

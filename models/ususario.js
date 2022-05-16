@@ -19,6 +19,10 @@ const UsuarioSchema = Schema({
         type: String,
         require: true
     },
+    telefono: {
+        type: String,
+        require: false
+    },
     mascotas: {
         type: Array,
         require: false,

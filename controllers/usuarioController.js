@@ -22,6 +22,7 @@ async function registrarUsuario(req, res){
         nuevoUsuario.email = params.email
         nuevoUsuario.nombre = params.nombre
         nuevoUsuario.apellido = params.apellido
+        nuevoUsuario.telefono = params.telefono
         if(req.files.avatar){
             const filePath = req.files.avatar.path;
                     const fileSplit = filePath.split(process.env.split);
@@ -72,7 +73,8 @@ async function getUsuario(req, res){
          const user = {
                 id: req.user.id,
                 nombre: req.user.nombre,
-                email: req.user.email
+                email: req.user.email,
+                telefono: req.user.telefono,
          }
     res.status(200).send(user)
    

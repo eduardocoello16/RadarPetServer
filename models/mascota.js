@@ -34,6 +34,15 @@ const MascotaSchema = Schema({
   Peso: {
     type: String
   },
+  Tipocontacto: {
+    type: String,
+    enum: ["tel", "mail"],
+    require: [true, "Selecciona un tipo de contacto"]
+  },
+  Contacto: {
+    type: String,
+    require: true,
+  },
  
   FechaCreacion: {
     type: Date,
