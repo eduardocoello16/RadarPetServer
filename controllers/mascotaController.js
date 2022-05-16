@@ -53,7 +53,7 @@ async function createMascota(req, res) {
     }
   } else {
     res.status(500).send({
-      msg: "No se ha subido ninguna foto"
+      msg: "No se ha subido ninguna foto o no se ha introducido el nombre"
     });
   }
 }
