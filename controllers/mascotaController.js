@@ -21,7 +21,7 @@ async function createMascota(req, res) {
     let date = new Date();
     date.setMonth(date.getMonth() + 3);
     mascota.FechaExpiracion = date
-    
+
     const filePath = req.files.foto.path;
     console.log(filePath);
     const fileSplit = filePath.split(process.env.split);
@@ -63,7 +63,7 @@ async function getMascotas(req, res) {
     var listaMascotas = await Mascota.find().sort({
       FechaCreacion: -1
     });
-   listaMascotas = listaMascotas.filter(mascota => mascota.FechaExpiracion >= new Date());
+    listaMascotas = listaMascotas.filter(mascota => mascota.FechaExpiracion >= new Date());
     if (!listaMascotas) {
       res.status(400).send({
         msg: "Error al obtener las Mascotas"
@@ -175,7 +175,7 @@ async function getFoto(req, res) {
   }
 }
 
-async function caducidadMascota(req,res){
+async function caducidadMascota(req, res) {
   idMascota = req.params.id;
   try {
     const mascota = await Mascota.findById(idMascota);
@@ -184,17 +184,17 @@ async function caducidadMascota(req,res){
         msg: "no se ha encontrado la mascota"
       });
     } else {
-     if(mascota.FechaExpiracion < new Date()){
-      mascota.FechaExpiracion = new Date().setMonth(new Date().getMonth() + 3);
-      mascota.save();
-      res.status(200).send({
-        msg: "Se ha actualizado correctamete"
-      });
-    }else{
-      res.status(400).send({
-        msg: "La mascota no ha caducado"
-      });
-    }
+      if (mascota.FechaExpiracion < new Date()) {
+        mascota.FechaExpiracion = new Date().setMonth(new Date().getMonth() + 3);
+        mascota.save();
+        res.status(200).send({
+          msg: "Se ha actualizado correctamete"
+        });
+      } else {
+        res.status(400).send({
+          msg: "La mascota no ha caducado"
+        });
+      }
     }
   } catch (error) {
     res.status(500).send(error);
@@ -204,15 +204,15 @@ async function caducidadMascota(req,res){
 }
 
 async function updateDatos(req, res) {
- // const params = JSON.parse(req.body.datos);
+  // const params = JSON.parse(req.body.datos);
 
-    const mascotaUser = await UsuarioController.buscaMascota(req.user, req.params.id);
-    if (!mascotaUser) {
-      res.status(400).send({
-        msg: "No tienes permisos para actualizar los datos"
-      });
-    } else {
-      if(req.files.foto){
+  const mascotaUser = await UsuarioController.buscaMascota(req.user, req.params.id);
+  if (!mascotaUser) {
+    res.status(400).send({
+      msg: "No tienes permisos para actualizar los datos"
+    });
+  } else {
+    if (req.files.foto) {
       const filePath = req.files.foto.path;
       const fileSplit = filePath.split(process.env.split);
       const fileName = fileSplit[2];
@@ -234,11 +234,11 @@ async function updateDatos(req, res) {
         }
       }
     } else {
-      if(req.body.datos){
+      if (req.body.datos) {
         let params = JSON.parse(req.body.datos);
         try {
           const mascota = await Mascota.findByIdAndUpdate(mascotaUser.id, params);
-      
+
           if (!mascota) {
             res.status(400).send({
               msg: "no se ha encontrado la mascota"
@@ -252,11 +252,11 @@ async function updateDatos(req, res) {
           res.status(500).send(error);
           console.log(error)
         }
-        }
       }
-
-
     }
+
+
+  }
 
 }
 
