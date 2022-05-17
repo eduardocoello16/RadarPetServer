@@ -69,12 +69,15 @@ async function iniciarSesion(req, res){
 
 
 async function getUsuario(req, res){
+    const usuario = await Usuario.findOne( {_id: req.user.id});
    try {
          const user = {
-                id: req.user.id,
-                nombre: req.user.nombre,
-                email: req.user.email,
-                telefono: req.user.telefono,
+                id: usuario.id,
+                nombre: usuario.nombre,
+                apellido: usuario.apellido,
+                email: usuario.email,
+                telefono: usuario.telefono,
+                avatar: usuario.avatar
          }
     res.status(200).send(user)
    
