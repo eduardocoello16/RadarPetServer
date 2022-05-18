@@ -23,9 +23,7 @@ async function createMascota(req, res) {
     mascota.FechaExpiracion = date
 
     const filePath = req.files.foto.path;
-    console.log(filePath);
     const fileSplit = filePath.split(process.env.split);
-    console.log(process.env.split);
     const fileName = fileSplit[2];
     const extSplit = fileName.split(".");
 
@@ -108,27 +106,6 @@ async function getMascota(req, res) {
     res.status(500).send(error);
   }
 }
-
-async function editMascota(req, res) {
-  const idMascota = req.params.id;
-  const params = req.body;
-
-  try {
-    const mascota = await Mascota.findByIdAndUpdate(idMascota, params);
-
-    if (!mascota) {
-      res.status(400).send({
-        msg: "no se ha encontrado la mascota"
-      });
-    } else {
-      res.status(200).send({
-        msg: "Se ha actualizado correctamet"
-      });
-    }
-  } catch (error) {
-    res.status(500).send(error);
-  }
-}
 async function delMascota(req, res) {
   const idMascota = req.params.id;
 
@@ -205,66 +182,49 @@ async function caducidadMascota(req, res) {
 
 async function updateDatos(req, res) {
   // const params = JSON.parse(req.body.datos);
+try {
+  
 
   const mascotaUser = await UsuarioController.buscaMascota(req.user, req.params.id);
-  if (!mascotaUser) {
-    res.status(400).send({
+  if (!mascotaUser) throw {
       msg: "No tienes permisos para actualizar los datos"
-    });
-  } else {
+  } 
     if (req.files.foto) {
       const filePath = req.files.foto.path;
       const fileSplit = filePath.split(process.env.split);
       const fileName = fileSplit[2];
       const extSplit = fileName.split(".");
-      if (extSplit[1] === "png" || extSplit[1] === "jpg") {
-        try {
+      if (extSplit[1] != "png" && extSplit[1] != "jpg") throw {
+        msg: "Extension no valida. Solo .png y .jpg"
+      }
           if (fs.existsSync(`./uploads/fotosMascotas/${mascotaUser.Foto}`)) {
             fs.unlinkSync(`./uploads/fotosMascotas/${mascotaUser.Foto}`);
           }
           mascotaUser.Foto = fileName;
-          mascotaUser.save();
-          res.status(200).send({
-            msg: "Avatar actualizado"
-          })
-        } catch (error) {
-          res.status(500).send({
-            msg: "Error interno del servidor al eliminar tu antiguo avatar"
-          })
-        }
-      }
-    } else {
+         
+     
+    }
       if (req.body.datos) {
         let params = JSON.parse(req.body.datos);
-        try {
           const mascota = await Mascota.findByIdAndUpdate(mascotaUser.id, params);
-
-          if (!mascota) {
-            res.status(400).send({
+          if (!mascota) throw{
               msg: "no se ha encontrado la mascota"
-            });
-          } else {
-            res.status(200).send({
-              msg: "Se ha actualizado correctamet"
-            });
           }
-        } catch (error) {
-          res.status(500).send(error);
-          console.log(error)
-        }
       }
+      mascotaUser.save();
+      res.status(200).send({
+        msg: "Datos Actualizados"
+      });
+    } catch (error) {
+      res.status(500).send(error);
     }
 
-
   }
-
-}
 
 module.exports = {
   createMascota,
   getMascotas,
   getMascota,
-  editMascota,
   getMascotasFromUser,
   delMascota,
   getFoto,
