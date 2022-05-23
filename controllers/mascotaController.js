@@ -183,8 +183,6 @@ async function caducidadMascota(req, res) {
 async function updateDatos(req, res) {
   // const params = JSON.parse(req.body.datos);
 try {
-  
-
   const mascotaUser = await UsuarioController.buscaMascota(req.user, req.params.id);
   if (!mascotaUser) throw {
       msg: "No tienes permisos para actualizar los datos"
