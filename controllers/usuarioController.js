@@ -12,26 +12,39 @@ async function registrarUsuario(req, res) {
 
 
     try {
-        if (!params.email) throw {
-            msg: {
-                email: "El email es obligatorio"
+
+            let errors = {
+                msg: {
+                    nombre: "",
+                    apellido: "",
+                    email: "",
+                    password: "",
+                    telefono: ""
+                }
             }
+            let error = false
+            console.log(errors)
+        if (!params.email) {
+           errors.msg.email = "El email es obligatorio"
+           error = true
         };
-        if (!params.password) throw {
-            msg: "Pass Vacio"
+        if (!params.password) {
+            errors.msg.email = "La Contraseña es obligatoria pibe!"
+            error = true
         };
         const foundEmail = await Usuario.findOne({
-            email: params.email
+            email: params.email.toLowerCase()
         })
-        if (foundEmail) throw {
-            msg: {
-                email: "El email está en uso"
-            }
+        if (foundEmail)  {
+            errors.msg.email = "Lo sentimos, ese E-mail ya está en uso"
+            error = true
         }
+        console.log(errors)
+        if(error === true) throw errors;
         const salt = bcryptjs.genSaltSync(10)
         const nuevoUsuario = new Usuario();
         nuevoUsuario.password = await bcryptjs.hash(params.password, salt)
-        nuevoUsuario.email = params.email
+        nuevoUsuario.email = params.email.toLowerCase()
         nuevoUsuario.nombre = params.nombre
         nuevoUsuario.apellido = params.apellido
         nuevoUsuario.telefono = params.telefono
@@ -53,8 +66,9 @@ async function registrarUsuario(req, res) {
 
 
 
-    } catch (error) {
-        res.status(500).send(error)
+    } catch (errores) {
+        console.log(errores)
+        res.status(500).send(errores)
     }
 }
 
