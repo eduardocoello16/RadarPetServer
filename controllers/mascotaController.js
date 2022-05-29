@@ -2,11 +2,17 @@ const Mascota = require("../models/mascota");
 const fs = require("fs");
 const path = require("path");
 const UsuarioController = require("../controllers/usuarioController");
+
 async function createMascota(req, res) {
+  try {
   const mascota = new Mascota();
   const params = JSON.parse(req.body.datos);
-
-  if (params.Nombre && req.files.foto) {
+  if(!params.Nombre) throw {
+    msg: "El nombre es obligatorio"
+  }
+  if(!req.files.foto) throw {
+    msg: "La foto es obligatoria"
+  }
     mascota.TipoEstado = params.TipoEstado;
     mascota.Nombre = params.Nombre;
     mascota.Ubicacion = params.Ubicacion;
@@ -20,17 +26,17 @@ async function createMascota(req, res) {
     //Crear una expiración de 3 mesitos
     let date = new Date();
     date.setMonth(date.getMonth() + 3);
-    mascota.FechaExpiracion = date
-
+    mascota.FechaExpiracion = date;
     const filePath = req.files.foto.path;
     const fileSplit = filePath.split(process.env.split);
     const fileName = fileSplit[2];
     const extSplit = fileName.split(".");
 
-    if (extSplit[1] === "png" || extSplit[1] === "jpg") {
+    if (extSplit[1] != "png" && extSplit[1] != "jpg") throw {
+      msg: "Extension no valida. Solo .png y .jpg"
+    }
       mascota.Foto = fileName;
-      try {
-        const mascotaStore = await mascota.save();
+      const mascotaStore = await mascota.save();
         if (!mascotaStore) {
           res.status(400).send({
             msg: "No se ha podído guardar el bicho"
@@ -41,19 +47,14 @@ async function createMascota(req, res) {
             Mascota: mascotaStore
           });
         }
-      } catch (error) {
-        res.status(500).send(error);
-      }
-    } else {
-      res.status(500).send({
-        msg: "Extension no valida. Solo .png y .jpg"
-      });
-    }
-  } else {
-    res.status(500).send({
-      msg: "No se ha subido ninguna foto o no se ha introducido el nombre"
-    });
+
+} catch (error) {
+  if(!error.msg){
+    error.msg = "Error en el servidor"
   }
+  res.status(500).send(error);
+
+}
 }
 
 async function getMascotas(req, res) {
@@ -70,23 +71,34 @@ async function getMascotas(req, res) {
       res.status(200).send(listaMascotas);
     }
   } catch (error) {
+    if(!error.msg){
+      error.msg = "Error en el servidor"
+    }
     res.status(500).send(error);
   }
 }
 async function getMascotasFromUser(req, res) {
+  try {
   let mascotas = await UsuarioController.getMascotas(req.user);
-  if (!mascotas) {
-    res.status(400).send({
-      msg: "Error al obtener las tareas"
-    });
-  } else {
+  if (!mascotas) throw {
+    msg: "La mascota no se encontró en la base de datos del usuario"
+  }
     var listaMascotas = [];
-    for (let i = 0; i < mascotas.length; i++) {
-      const mascota = await Mascota.findById(mascotas[i]);
-      listaMascotas.push(mascota);
+    while (mascotas.length > 0) {
+      const mascota = await Mascota.findById(mascotas[mascotas.length - 1]);
+      if (!mascota) {
+        mascotas.pop();
+      }else{
+        listaMascotas.push(mascota);
+        mascotas.pop()
+      }
+     
     }
     res.status(200).send(listaMascotas);
-  }
+  
+} catch (error) {
+  res.status(500).send(error);
+}
 }
 
 async function getMascota(req, res) {
@@ -97,7 +109,7 @@ async function getMascota(req, res) {
 
     if (!mascota) {
       res.status(400).send({
-        msg: "no se ha encontrado la tarea"
+        msg: "No se ha encontrado la Mascota"
       });
     } else {
       res.status(200).send(mascota);

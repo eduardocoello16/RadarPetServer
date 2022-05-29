@@ -13,7 +13,9 @@ async function registrarUsuario(req, res) {
 
     try {
         if (!params.email) throw {
-            msg: "Email Vacio"
+            msg: {
+                email: "El email es obligatorio"
+            }
         };
         if (!params.password) throw {
             msg: "Pass Vacio"
@@ -22,7 +24,9 @@ async function registrarUsuario(req, res) {
             email: params.email
         })
         if (foundEmail) throw {
-            msg: "Email en uso"
+            msg: {
+                email: "El email está en uso"
+            }
         }
         const salt = bcryptjs.genSaltSync(10)
         const nuevoUsuario = new Usuario();
@@ -36,25 +40,17 @@ async function registrarUsuario(req, res) {
             const fileSplit = filePath.split(process.env.split);
             const fileName = fileSplit[2];
             const extSplit = fileName.split(".");
-            if (extSplit[1] === 'png' || extSplit[1] === 'jpg') {
+            if (extSplit[1] != 'png' && extSplit[1] != 'jpg')
+            throw { 
+                msg: "Extension no valida. Solo .png y .jpg"
+            } 
                 nuevoUsuario.avatar = fileName;
-                nuevoUsuario.save();
-                res.status(200).send({
-                    msg: "Usuario registrado"
-                })
-
-            } else {
-                res.status(500).send({
-                    msg: "Extension no valida. Solo .png y .jpg"
-                });
-            }
-        } else {
+        } 
             nuevoUsuario.save();
             res.status(200).send({
                 msg: "Usuario registrado"
             })
 
-        }
 
 
     } catch (error) {
@@ -182,10 +178,12 @@ async function getMascotas(user) {
     const usuario = await Usuario.findOne({
         _id: user.id
     });
-    if (!usuario) throw {
-        msg: "Error en el mail o password"
+    if (!usuario) {
+      return null
+    } else{
+        return usuario.mascotas;
     }
-    return usuario.mascotas; //Devuelve un array de id de mascotas
+     //Devuelve un array de id de mascotas
 }
 async function addMascota(user, mascota) {
     //Meter una mascota al usuario 
