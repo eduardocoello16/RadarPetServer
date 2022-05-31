@@ -78,9 +78,10 @@ async function iniciarSesion(req, res) {
         email,
         password
     } = req.body;
+    const emailLower = email.toLowerCase();
     try {
         const usuario = await Usuario.findOne({
-            email
+            emailLower
         });
         if (!usuario) throw {
             msg: "Error en el mail o password"
