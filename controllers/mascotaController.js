@@ -13,6 +13,7 @@ async function createMascota(req, res) {
   if(!req.files.foto) throw {
     msg: "La foto es obligatoria"
   }
+    mascota.UserId = req.user.id;
     mascota.TipoEstado = params.TipoEstado;
     mascota.Nombre = params.Nombre;
     mascota.Ubicacion = params.Ubicacion;
@@ -20,7 +21,6 @@ async function createMascota(req, res) {
     mascota.Raza = params.Raza;
     mascota.Edad = params.Edad;
     mascota.Tipocontacto = params.Tipocontacto;
-    mascota.Contacto = params.Contacto;
     mascota.Descripcion = params.Descripcion;
     mascota.Peso = params.Peso;
     //Crear una expiración de 3 mesitos
@@ -49,6 +49,7 @@ async function createMascota(req, res) {
         }
 
 } catch (error) {
+  console.log(error)
   if(!error.msg){
     error.msg = "Error en el servidor"
   }
@@ -105,16 +106,28 @@ async function getMascota(req, res) {
   const idMascota = req.params.id;
 
   try {
-    const mascota = await Mascota.findById(idMascota);
-
+    const mascota = await Mascota.findById(idMascota).populate("UserId");
+    console.log('d')
     if (!mascota) {
       res.status(400).send({
         msg: "No se ha encontrado la Mascota"
       });
     } else {
-      res.status(200).send(mascota);
+      let contacto
+      if(mascota.Tipocontacto === 'tel'){
+          contacto = mascota.UserId.telefono
+        }else{
+          contacto = mascota.UserId.email
+        }
+      const mascotaReturn = {
+        mascota: mascota,
+        contacto: contacto
+      }
+     
+      res.status(200).send(mascotaReturn);
     }
   } catch (error) {
+    console.log(error)
     res.status(500).send(error);
   }
 }

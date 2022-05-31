@@ -2,6 +2,10 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const MascotaSchema = Schema({
+  UserId: {
+    type: Schema.Types.ObjectId,
+    ref: "Usuario"
+  },
   TipoEstado: {
     type: String,
     enum: ["Perdido", "Encontrado"],
@@ -38,10 +42,6 @@ const MascotaSchema = Schema({
     type: String,
     enum: ["tel", "mail"],
     require: [true, "Selecciona un tipo de contacto"]
-  },
-  Contacto: {
-    type: String,
-    require: true,
   },
  
   FechaCreacion: {
