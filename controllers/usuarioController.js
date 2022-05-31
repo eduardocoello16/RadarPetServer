@@ -29,7 +29,7 @@ async function registrarUsuario(req, res) {
            error = true
         };
         if (!params.password) {
-            errors.msg.email = "La Contraseña es obligatoria pibe!"
+            errors.msg.password = "La Contraseña es obligatoria pibe!"
             error = true
         };
         const foundEmail = await Usuario.findOne({
