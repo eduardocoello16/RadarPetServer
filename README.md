@@ -11,7 +11,7 @@ Puerto
 ```
 PORT
 ```
-Barra del sistema (Windows "\" Linux y Mac "/")
+Barra del sistema (Windows " \ " Linux y Mac " / ")
 ```
 split
 ```
